@@ -13,6 +13,8 @@ module Deploy
 
     UPDATERS = [:deploy, :update]
 
+    attr_reader :app, :name
+
     def events
       EVENTS[name]
     end
@@ -20,8 +22,19 @@ module Deploy
   private
 
     def initialize(app_name, command)
-      @app  = Application.new(app_name)
-      @name = command.to_sym
+      @app     = Application.new(app_name)
+      @recipes = Recipes.instance
+      @name    = command.to_sym
+    end
+
+    def app_recipes
+      app.recipes
+    end
+
+    def dispatch
+      recipes = app_recipes.map do |recipe_name|
+        @recipes.get(recipe_name)
+      end
     end
 
   end

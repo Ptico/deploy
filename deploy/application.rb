@@ -8,10 +8,14 @@ module Deploy
       File.exists?(root)
     end
 
-    def settings(force_update=false)
+    def config(force_update=false)
       file = paths.repo.join('.deploy.yml')
-      @settings = nil if force_update
-      @settings ||= YAML.load(file)
+      @config = nil if force_update
+      @config ||= YAML.load(file)
+    end
+
+    def recipes
+      config['recipes'] || []
     end
 
   private
