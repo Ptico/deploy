@@ -20,16 +20,16 @@ module Deploy
 
     def listeners
       @events ||= begin
+        listeners = Listenable.new
 
-      listeners = Listenable.new
-
-      config.keys.each do |key|
-        if key.match(/^(on|before|after)_(\w+)/)
-          listeners.send($1, $2, -> { Shell.run(config[key]) })
+        config.keys.each do |key|
+          if key.match(/^(on|before|after)_(\w+)/)
+            listeners.send($1, $2, -> { Shell.run(config[key]) })
+          end
         end
-      end
 
-      listeners
+        listeners
+      end
     end
 
   private
