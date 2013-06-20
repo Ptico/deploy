@@ -16,7 +16,7 @@ module Deploy
     attr_reader :app, :name
 
     def events
-      EVENTS[name]
+      @events ||= EVENTS[name]
     end
 
   private
@@ -31,9 +31,22 @@ module Deploy
       app.recipes
     end
 
-    def dispatch
-      recipes = app_recipes.map do |recipe_name|
-        @recipes.get(recipe_name)
+    def build_listeners
+      listeners = app_recipes.each_with_object({}) do |recipe_name, listeners|
+        recipe = @recipes.get(recipe_name)
+        add_listener(recipe)
+      end
+
+      app.listeners.each do |listenable|
+        add_listener(listenable)
+      end
+    end
+
+    def add_listener(listenable)
+      listenable.events.each do |event|
+        if events.include?(event)
+          listeners[event] = listenable
+        end
       end
     end
 

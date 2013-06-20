@@ -18,6 +18,20 @@ module Deploy
       config['recipes'] || []
     end
 
+    def listeners
+      @events ||= begin
+
+      listeners = Listenable.new
+
+      config.keys.each do |key|
+        if key.match(/^(on|before|after)_(\w+)/)
+          listeners.send($1, $2, -> { Shell.run(config[key]) })
+        end
+      end
+
+      listeners
+    end
+
   private
 
     def initialize(app_name)
