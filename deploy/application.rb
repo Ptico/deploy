@@ -19,7 +19,7 @@ module Deploy
     end
 
     def listeners
-      @events ||= begin
+      @listeners ||= begin
         listeners = Listenable.new
 
         config.keys.each do |key|
