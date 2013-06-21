@@ -1,4 +1,5 @@
-require 'application/paths'
+require 'yaml'
+require 'deploy/application/paths'
 
 module Deploy
   class Application
@@ -9,26 +10,26 @@ module Deploy
     end
 
     def config(force_update=false)
-      file = paths.repo.join('.deploy.yml')
+      file = paths.repo.join('deploy.yml')
       @config = nil if force_update
-      @config ||= YAML.load(file)
+      @config ||= (File.exists?(file) ? YAML.load_file(file.to_s) : {}) || {}
     end
 
     def recipes
       config['recipes'] || []
     end
 
-    def listeners
-      @listeners ||= begin
-        listeners = Listenable.new
+    def listener
+      @listener ||= begin
+        listener = Listeners.new
 
         config.keys.each do |key|
           if key.match(/^(on|before|after)_(\w+)/)
-            listeners.send($1, $2, -> { Shell.run(config[key]) })
+            listener.send($1, $2, &->(app){ Shell.run(config[key]) })
           end
         end
 
-        listeners
+        listener
       end
     end
 
@@ -36,8 +37,8 @@ module Deploy
 
     def initialize(app_name)
       @name  = app_name.to_sym
-      @root  = GLOBAL_ROOT.join(app_name.to_s)
-      @paths = AppPaths.new(root)
+      @root  = GLOBAL_ROOT.join('apps', app_name.to_s)
+      @paths = Paths.new(root)
     end
 
   end

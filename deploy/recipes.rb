@@ -9,7 +9,7 @@ module Deploy
     PATTERN = GLOBAL_ROOT.join('recipes/*/*.rb')
 
     def filelist
-      Dir.glob[PATTERN]
+      Dir[PATTERN]
     end
 
     def get(recipe_name)
@@ -45,7 +45,7 @@ module Deploy
 
     # TODO - use mbj/inflecto instead
     def constantize(name)
-      camel = input.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:\A|_)(.)/) { $1.upcase }
+      camel = name.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:\A|_)(.)/) { $1.upcase }
       Kernel.const_get(camel)
     end
   end

@@ -1,7 +1,6 @@
 module Deploy
   module Listenable
     Listener = Struct.new(:callback, :options).freeze
-    Klass    = Class.new { include Listenable }
 
     def before(event, *args, &block)
       events << event.to_sym
@@ -18,6 +17,19 @@ module Deploy
       add_listener("after_#{event}", *args, &block)
     end
 
+    def fire(event, data)
+      return unless listener = listeners[event]
+
+      if callback = listener.callback
+        instance = self.new
+        if callback.is_a?(Symbol)
+          instance.send(callback)
+        else
+          instance.instance_exec(data, &callback)
+        end
+      end
+    end
+
     def listeners
       @listeners ||= {}
     end
@@ -26,15 +38,7 @@ module Deploy
       @events ||= []
     end
 
-    def self.new
-      Klass.new
-    end
-
   private
-
-    def self.included(base)
-      base.extend Listenable
-    end
 
     def add_listener(name, *args, &block)
       options = args.shift if args.last.is_a?(Hash) # Extract options
@@ -43,5 +47,6 @@ module Deploy
 
       listeners[name] = Listener.new(callback, options)
     end
+
   end
 end

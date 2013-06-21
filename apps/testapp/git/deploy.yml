@@ -1,0 +1,3 @@
+recipes:
+  - active_record
+on_build: build

@@ -19,6 +19,18 @@ module Deploy
       @events ||= EVENTS[name]
     end
 
+    def dispatch
+      listeners = recipe_listeners << app.listener
+
+      events.each do |event|
+        %W(before_#{event} on_#{event} after_#{event}).each do |event_name|
+          listeners.each do |listener|
+            listener.fire(event_name, app)
+          end
+        end
+      end
+    end
+
   private
 
     def initialize(app_name, command)
@@ -31,22 +43,9 @@ module Deploy
       app.recipes
     end
 
-    def build_listeners
-      listeners = app_recipes.each_with_object({}) do |recipe_name, listeners|
-        recipe = @recipes.get(recipe_name)
-        add_listener(recipe)
-      end
-
-      app.listeners.each do |listenable|
-        add_listener(listenable)
-      end
-    end
-
-    def add_listener(listenable)
-      listenable.events.each do |event|
-        if events.include?(event)
-          listeners[event] = listenable
-        end
+    def recipe_listeners
+      app_recipes.map do |recipe_name|
+        @recipes.get(recipe_name)
       end
     end
 

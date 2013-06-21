@@ -1,6 +1,6 @@
 module Deploy
   class Recipe
-    include Listenable
+    extend Listenable
 
   end
 end
