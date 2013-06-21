@@ -1,7 +1,7 @@
 require 'fileutils'
 
 module Deploy
-  class Setup
+  class Create
     attr_reader :name, :repo, :app
 
     def create_folders
@@ -11,11 +11,11 @@ module Deploy
     end
 
     def clone_repo
-      %x(git clone #{repo} #{repo_path})
+      %x(git clone #{repo} #{app.paths.repo})
     end
 
     def create_files
-      File.open(app.root.join('Envfile'), File::WRONLY) do |f|
+      File.open(app.root.join('Envfile'), File::WRONLY|File::CREAT) do |f|
         f.write('APP_ROOT=' + app.root.to_s) # TODO - another paths, template
       end
     end

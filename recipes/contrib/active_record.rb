@@ -1,9 +1,9 @@
 class ActiveRecord < Deploy::Recipe
   on :configure do |app|
-    puts 'configure'
+    puts 'cp shared/database.yml current/config/database.yml'
   end
 
   on :migrate do |app|
-    puts 'migrate'
+    puts 'rake db:migrate'
   end
 end
