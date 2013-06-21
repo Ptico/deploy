@@ -1,3 +1,0 @@
-recipes:
-  - active_record
-on_build: rake build

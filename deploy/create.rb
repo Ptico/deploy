@@ -4,6 +4,23 @@ module Deploy
   class Create
     attr_reader :name, :repo, :app
 
+    def dispatch
+      return if app.exists? # TODO - exception
+
+      create_folders
+      clone_repo
+      create_files
+    end
+
+  private
+
+    def initialize(app_name, git_repo)
+      @name = app_name.to_s
+      @repo = git_repo.to_s
+
+      @app = Application.new(app_name)
+    end
+
     def create_folders
       app.paths.each do |path|
         FileUtils.mkdir_p(path) # TODO - do not create current
@@ -18,21 +35,6 @@ module Deploy
       File.open(app.root.join('Envfile'), File::WRONLY|File::CREAT) do |f|
         f.write('APP_ROOT=' + app.root.to_s) # TODO - another paths, template
       end
-    end
-
-  private
-
-    def initialize(app_name, git_repo)
-      @name = app_name.to_s
-      @repo = git_repo.to_s
-
-      @app = Application.new(app_name)
-
-      return if app.exists? # TODO - exception
-
-      create_folders
-      clone_repo
-      create_files
     end
 
   end
