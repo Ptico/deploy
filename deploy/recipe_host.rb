@@ -1,7 +1,8 @@
 require 'singleton'
+require 'inflecto'
 
 module Deploy
-  class Recipes
+  class RecipeHost
     include Singleton
 
     attr_reader :index, :cache
@@ -45,8 +46,8 @@ module Deploy
 
     # TODO - use mbj/inflecto instead
     def constantize(name)
-      camel = name.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:\A|_)(.)/) { $1.upcase }
-      Kernel.const_get(camel)
+      camel = Inflecto.camelize(name)
+      Inflecto.constantize("Deploy::Recipes::#{camel}")
     end
   end
 end

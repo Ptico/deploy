@@ -10,6 +10,8 @@ module Deploy
       create_folders
       clone_repo
       create_files
+
+      Command.new(name, :preconfigure).dispatch
     end
 
   private

@@ -17,15 +17,16 @@ module Deploy
       add_listener("after_#{event}", *args, &block)
     end
 
-    def fire(event, data)
+    def fire(event, app)
       return unless listener = listeners[event]
 
       if callback = listener.callback
-        instance = self.new
+        instance = self.new(app)
+
         if callback.is_a?(Symbol)
           instance.send(callback)
         else
-          instance.instance_exec(data, &callback)
+          instance.instance_exec(&callback)
         end
       end
     end

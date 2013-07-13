@@ -2,10 +2,11 @@ module Deploy
   class Listeners
     include Listenable
 
-    def fire(event, data)
+    def fire(event, app)
       return unless listener = listeners[event]
 
-      listener.callback.call(data)
+      listener.callback.call
     end
+
   end
 end

@@ -2,11 +2,7 @@ module Deploy
   class Command
     EVENTS = {
       deploy:  [:configure, :build, :migrate, :restart],
-      update:  [:configure, :build],
-      migrate: [:migrate],
-      start:   [:start],
-      stop:    [:stop],
-      restart: [:restart]
+      update:  [:configure, :build]
     }
 
     COMMAND_LIST = EVENTS.keys
@@ -16,7 +12,7 @@ module Deploy
     attr_reader :app, :name
 
     def events
-      @events ||= EVENTS[name]
+      @events ||= EVENTS[name] || [name]
     end
 
     def dispatch
@@ -35,7 +31,7 @@ module Deploy
 
     def initialize(app_name, command)
       @app     = Application.new(app_name)
-      @recipes = Recipes.instance
+      @recipes = RecipeHost.instance
       @name    = command.to_sym
     end
 
