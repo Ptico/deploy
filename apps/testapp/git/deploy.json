@@ -1,6 +1,0 @@
-{
-  "recipes": ["active_record"],
-  "events": {
-    "on_build": "rake build"
-  }
-}
