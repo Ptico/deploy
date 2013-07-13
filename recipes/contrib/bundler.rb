@@ -9,7 +9,7 @@ module Deploy
 
       before :configure do
         chdir paths.current_release do
-          run "bundle install --deployment --binstubs bin/ --without development:test --path #{paths.shared.join('bundle')} --gemfile #{paths.current_release.join('Gemfile')}"
+          run "bundle install --deployment --binstubs bin/ --without development:test --path #{paths.shared.join('vendor/bundle')} --gemfile #{paths.current_release.join('Gemfile')}"
         end
       end
     end

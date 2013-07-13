@@ -60,13 +60,21 @@ module Deploy
       Shell::Command.new('git pull', { chdir: app.paths.repo })
 
       copy_release
+      copy_shared
       link_current
     end
 
     def copy_release
       logger.info('Copy new release')
 
+      # TODO - clean releases
       FileUtils.cp_r(app.paths.repo, app.paths.next_release)
+    end
+
+    def copy_shared
+      Dir[app.paths.shared.join('*')].each do |file|
+        FileUtils.cp_r(file, app.paths.current_release)
+      end
     end
 
     def link_current
