@@ -31,7 +31,7 @@ module Deploy
       end
 
       def current_release_num
-        (Dir.entries(releases).each(&:to_i).sort.last || 1).to_i
+        (Dir.entries(releases).map(&:to_i).sort.last || 1).to_i
       end
     end
   end

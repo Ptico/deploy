@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Deploy
   class Command
     EVENTS = {
@@ -9,19 +11,25 @@ module Deploy
 
     UPDATERS = [:deploy, :update]
 
-    attr_reader :app, :name
+    attr_reader :app, :name, :logger
 
     def events
       @events ||= EVENTS[name] || [name]
     end
 
     def dispatch
-      listeners = recipe_listeners << app.listener
+      Bundler.with_clean_env do
+        update if UPDATERS.include?(name)
 
-      events.each do |event|
-        %W(before_#{event} on_#{event} after_#{event}).each do |event_name|
-          listeners.each do |listener|
-            listener.fire(event_name, app)
+        export_env
+
+        listeners = recipe_listeners << app.listener
+
+        events.each do |event|
+          %W(before_#{event} on_#{event} after_#{event}).each do |event_name|
+            listeners.each do |listener|
+              listener.fire(event_name, app)
+            end
           end
         end
       end
@@ -29,10 +37,11 @@ module Deploy
 
   private
 
-    def initialize(app_name, command)
+    def initialize(app_name, command, logger=Deploy.logger)
       @app     = Application.new(app_name)
       @recipes = RecipeHost.instance
       @name    = command.to_sym
+      @logger  = logger
     end
 
     def app_recipes
@@ -43,6 +52,40 @@ module Deploy
       app_recipes.map do |recipe_name|
         @recipes.get(recipe_name)
       end
+    end
+
+    def update
+      logger.info('Update repository')
+
+      Shell::Command.new('git pull', { chdir: app.paths.repo })
+
+      copy_release
+      link_current
+    end
+
+    def copy_release
+      logger.info('Copy new release')
+
+      FileUtils.cp_r(app.paths.repo, app.paths.next_release)
+    end
+
+    def link_current
+      logger.info('Link current release')
+
+      FileUtils.rm_rf(app.paths.current)
+      FileUtils.ln_s(app.paths.current_release, app.paths.current)
+    end
+
+    def export_env
+      app_env = app.paths.root.join('Envfile')
+      rel_env = app.paths.current.join('Envfile')
+
+      files = []
+      files << GLOBAL_ROOT.join('Envfile')
+      files << app_env if File.exists?(app_env)
+      files << rel_env if File.exists?(rel_env)
+
+      Dotenv.load(*files)
     end
 
   end

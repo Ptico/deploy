@@ -5,12 +5,11 @@ module Deploy
         chdir paths.current_release do
           run 'bundle install'
         end
-        
       end
 
       before :configure do
-        chdir paths.current do
-          run 'bundle install'
+        chdir paths.current_release do
+          run "bundle install --deployment --binstubs bin/ --without development:test --path #{paths.shared.join('bundle')} --gemfile #{paths.current_release.join('Gemfile')}"
         end
       end
     end

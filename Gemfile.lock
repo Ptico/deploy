@@ -2,7 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     coderay (1.0.9)
+    dotenv (0.8.0)
     inflecto (0.0.2)
+    lumberjack (1.0.4)
     method_source (0.8.1)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
@@ -14,5 +16,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   inflecto
+  lumberjack
   pry

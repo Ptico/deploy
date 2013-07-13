@@ -1,11 +1,16 @@
 require 'pathname'
+require 'bundler/setup'
+
+require 'lumberjack'
+require 'inflecto'
+require 'dotenv'
 
 module Deploy
   GLOBAL_ROOT = Pathname(__FILE__).dirname.realpath
 
   class << self
     def logger
-      @logger ||= Logger.new(STDOUT)
+      @logger ||= Lumberjack::Logger.new(STDOUT)
     end
   end
 end

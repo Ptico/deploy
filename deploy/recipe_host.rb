@@ -1,5 +1,4 @@
 require 'singleton'
-require 'inflecto'
 
 module Deploy
   class RecipeHost
