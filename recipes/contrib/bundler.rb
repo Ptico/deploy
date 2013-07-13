@@ -2,7 +2,7 @@ module Deploy
   module Recipes
     class Bundler < Recipe
       before :preconfigure do
-        chdir paths.current do
+        chdir paths.current_release do
           run 'bundle install'
         end
         

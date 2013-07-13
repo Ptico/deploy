@@ -20,6 +20,8 @@ module Deploy
     def fire(event, app)
       return unless listener = listeners[event]
 
+      Deploy.logger.info("Run #{event} event")
+
       if callback = listener.callback
         instance = self.new(app)
 

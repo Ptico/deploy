@@ -24,15 +24,15 @@ module Deploy
 
       attr_reader :command, :logger, :stdin, :stdout, :stderr, :wait_thread
 
-      def initialize(command_str, options={}, logger=Logger)
+      def initialize(command_str, options={}, logger=Deploy.logger)
         @command = command_str.to_s.strip
         @options = options
-        @logger = Logger.new(STDOUT)
+        @logger  = logger
         execute
       end
 
       def execute
-        logger.info("Running #{command}")
+        logger.info("Run #{command}")
 
         begin
           @stdin, @stdout, @stderr, @wait_thread = Open3.popen3(@command, @options)
