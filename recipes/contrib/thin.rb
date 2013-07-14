@@ -5,14 +5,14 @@ module Deploy
 
       on :stop do
         chdir paths.current_release do
-          run "thin --pid #{pidfile} stop"
+          run "bundle exec thin --pid #{pidfile} stop"
         end
       end
 
       on :restart do
         chdir paths.current_release do
           if File.exists?(pidfile)
-            run "thin #{options} restart"
+            run "bundle exec thin #{options} restart"
           else
             start
           end
@@ -21,7 +21,7 @@ module Deploy
 
       def start
         chdir paths.current_release do
-          run "thin #{options} start"
+          run "bundle exec thin #{options} start"
         end
       end
 
