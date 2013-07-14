@@ -29,7 +29,11 @@ module Deploy
 
         events.keys.each do |key|
           if key.match(/^(on|before|after)_(\w+)/)
-            listener.send($1, $2, &->{ Shell::Command.new(events[key], { chdir: paths.current.to_s }) })
+            commands = events[key]
+            commands = [commands] if commands.is_a?(String)
+            commands.each do |command|
+              listener.send($1, $2, &->{ Shell::Command.new(command, { chdir: paths.current.to_s }) })
+            end
           end
         end
 

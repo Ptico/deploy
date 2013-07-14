@@ -11,8 +11,6 @@ module Deploy
       clone_repo
       create_files
       copy_release
-
-      Command.new(name, :preconfigure).dispatch
     end
 
   private
@@ -45,6 +43,7 @@ module Deploy
 
       File.open(app.root.join('Envfile'), File::WRONLY|File::CREAT) do |f|
         f.write('APP_ROOT=' + app.root.to_s) # TODO - another paths, template
+        f.write('RAILS_ENV=production')
       end
     end
 

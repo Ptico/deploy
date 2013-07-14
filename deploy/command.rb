@@ -60,7 +60,7 @@ module Deploy
       Shell::Command.new('git pull', { chdir: app.paths.repo })
 
       copy_release
-      copy_shared
+      link_shared
       link_current
     end
 
@@ -71,9 +71,24 @@ module Deploy
       FileUtils.cp_r(app.paths.repo, app.paths.next_release)
     end
 
-    def copy_shared
-      Dir[app.paths.shared.join('*')].each do |file|
-        FileUtils.cp_r(file, app.paths.current_release)
+    def link_shared
+      files_for_linkage(app.paths.shared).flatten.each do |file|
+        target = app.paths.current_release.join(file)
+        FileUtils.rm(target) if File.exists?(target)
+        FileUtils.ln_s(app.paths.shared.join(file), target)
+      end
+    end
+
+    def files_for_linkage(dir)
+      Dir[dir.join('*')].map do |file|
+        rel    = Pathname.new(file).relative_path_from(app.paths.shared)
+        target = app.paths.current_release.join(rel)
+
+        if File.exists?(target) && File.directory?(target)
+          files_for_linkage(app.paths.shared.join(rel))
+        else
+          rel
+        end
       end
     end
 

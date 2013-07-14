@@ -15,7 +15,7 @@ module Deploy
   end
 end
 
-$: << Deploy::GLOBAL_ROOT
+$: << Deploy::GLOBAL_ROOT.to_s
 
 require 'deploy/shell'
 require 'deploy/listenable'
