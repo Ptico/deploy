@@ -42,8 +42,8 @@ module Deploy
       logger.info('Create app files')
 
       File.open(app.root.join('Envfile'), File::WRONLY|File::CREAT) do |f|
-        f.write('APP_ROOT=' + app.root.to_s) # TODO - another paths, template
-        f.write('RAILS_ENV=production')
+        f.write('APP_ROOT=' + app.root.to_s + "\n") # TODO - another paths, template
+        f.write("RAILS_ENV=production\n")
       end
     end
 

@@ -42,6 +42,7 @@ module Deploy
 
         @output = if status > 0
           logger.error(error)
+          logger.info(value)
           error
         else
           logger.info(value)
