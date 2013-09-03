@@ -11,7 +11,7 @@ module Deploy
 
     UPDATERS = [:deploy, :update]
 
-    attr_reader :app, :name, :logger
+    attr_reader :app, :world, :name, :logger
 
     def events
       @events ||= EVENTS[name] || [name]
@@ -39,6 +39,7 @@ module Deploy
 
     def initialize(app_name, command, logger=Deploy.logger)
       @app     = Application.new(app_name)
+      @world   = Deploy.world
       @recipes = RecipeHost.instance
       @name    = command.to_sym
       @logger  = logger
@@ -72,6 +73,8 @@ module Deploy
     end
 
     def link_shared
+      logger.info('Link shared folders and files')
+
       files_for_linkage(app.paths.shared).flatten.each do |file|
         target = app.paths.current_release.join(file)
         FileUtils.rm(target) if File.exists?(target)
@@ -100,13 +103,14 @@ module Deploy
     end
 
     def export_env
-      app_env = app.paths.root.join('Envfile')
-      rel_env = app.paths.current.join('Envfile')
+      glob_env = world.root.join('Envfile')
+      app_env  = app.paths.root.join('Envfile')
+      rel_env  = app.paths.current.join('Envfile')
 
       files = []
-      files << GLOBAL_ROOT.join('Envfile')
-      files << app_env if File.exists?(app_env)
-      files << rel_env if File.exists?(rel_env)
+      files << glob_env if File.exists?(glob_env)
+      files << app_env  if File.exists?(app_env)
+      files << rel_env  if File.exists?(rel_env)
 
       Dotenv.load(*files)
     end

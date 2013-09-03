@@ -3,6 +3,7 @@ GEM
   specs:
     coderay (1.0.9)
     dotenv (0.8.0)
+    hashie (2.0.5)
     inflecto (0.0.2)
     lumberjack (1.0.4)
     method_source (0.8.1)
@@ -17,6 +18,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  hashie
   inflecto
   lumberjack
   pry

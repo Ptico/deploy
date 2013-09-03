@@ -12,7 +12,7 @@ module Deploy
       on :restart do
         chdir paths.current_release do
           if File.exists?(pidfile)
-            run "bundle exec thin #{options} restart"
+            run "bundle exec thin #{arguments} restart"
           else
             start
           end
@@ -21,27 +21,24 @@ module Deploy
 
       def start
         chdir paths.current_release do
-          run "bundle exec thin #{options} start"
+          run "bundle exec thin #{arguments} start"
         end
       end
 
-      def options
-        opts = []
-        opts << "--socket " + (config['socket'] || paths.shared.join('tmp/sockets/thin.sock').to_s)
-        opts << "--rackup #{config['rackup']}" if config['rackup']
-        opts << "--environment " + (config['environment'] || ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'production')
-        opts << "--log " + (config['logfile'] || paths.shared.join('log/thin.log').to_s)
-        opts << "--pid " + pidfile
-        opts << "--daemonize"
-        opts.join(' ')
-      end
-
-      def config
-        app.config['thin'] || {}
+      def arguments
+        args = []
+        args << "--chdir " + paths.current_release.to_s
+        args << "--socket " + (options.socket || paths.shared.join('tmp/sockets/thin.sock').to_s)
+        args << "--rackup #{options.rackup}" if options.rackup?
+        args << "--environment " + (options.environment || ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'production')
+        args << "--log " + (options.logfile || paths.shared.join('log/thin.log').to_s)
+        args << "--pid " + pidfile
+        args << "--daemonize"
+        args.join(' ')
       end
 
       def pidfile
-        config['pidfile'] || paths.shared.join('tmp/pids/thin.pid').to_s
+        options.pidfile || paths.shared.join('tmp/pids/thin.pid').to_s
       end
     end
   end

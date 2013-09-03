@@ -1,22 +1,26 @@
+$: << Pathname(__FILE__).dirname.realpath.to_s
+
 require 'pathname'
 require 'bundler/setup'
 
 require 'lumberjack'
 require 'inflecto'
 require 'dotenv'
+require 'hashie/mash'
 
 module Deploy
-  GLOBAL_ROOT = Pathname(__FILE__).dirname.realpath
-
   class << self
     def logger
       @logger ||= Lumberjack::Logger.new(STDOUT)
     end
+
+    def world
+      @world ||= World.new(Pathname(Dir.pwd))
+    end
   end
 end
 
-$: << Deploy::GLOBAL_ROOT.to_s
-
+require 'deploy/world'
 require 'deploy/shell'
 require 'deploy/listenable'
 require 'deploy/listeners'

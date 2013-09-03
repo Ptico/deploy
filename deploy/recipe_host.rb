@@ -6,7 +6,7 @@ module Deploy
 
     attr_reader :index, :cache
 
-    PATTERN = GLOBAL_ROOT.join('recipes/*/*.rb')
+    PATTERN = Deploy.world.paths.recipes.join('*/*.rb')
 
     def filelist
       Dir[PATTERN]

@@ -12,15 +12,15 @@ module Deploy
     def config(force_update=false)
       file = paths.repo.join('deploy.json')
       @config = nil if force_update
-      @config ||= (File.exists?(file) ? JSON.load(File.open(file)) : {}) || {}
+      @config ||= Hashie::Mash.new(File.exists?(file) ? JSON.load(File.open(file)) : {})
     end
 
     def recipes
-      config['recipes'] || []
+      config.recipes || []
     end
 
     def events
-      config['events'] || {}
+      config.events || {}
     end
 
     def listener
@@ -44,8 +44,10 @@ module Deploy
   private
 
     def initialize(app_name)
+      world  = Deploy.world
+
       @name  = app_name.to_sym
-      @root  = GLOBAL_ROOT.join('apps', app_name.to_s)
+      @root  = world.paths.app(app_name)
       @paths = Paths.new(root)
     end
 
