@@ -47,9 +47,10 @@ module Deploy
 
       def create_folders
         folders = [
-          path.shared.join('tmp/sockets')
+          paths.shared.join('tmp/sockets'),
+          paths.shared.join('tmp/pids'),
         ]
-        folders.map{ |folder| FileUtils.mkdir_p folder }
+        FileUtils.mkdir_p folders
       end
     end
   end
