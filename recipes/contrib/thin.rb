@@ -19,6 +19,10 @@ module Deploy
         end
       end
 
+      on :configure do
+        create_folders
+      end
+
       def start
         chdir paths.current_release do
           run "bundle exec thin #{arguments} start"
@@ -39,6 +43,14 @@ module Deploy
 
       def pidfile
         options.pidfile || paths.shared.join('tmp/pids/thin.pid').to_s
+      end
+
+      def create_folders
+        folders = [
+          paths.shared.join('tmp/sockets'),
+          paths.shared.join('tmp/pids'),
+        ]
+        FileUtils.mkdir_p folders
       end
     end
   end
